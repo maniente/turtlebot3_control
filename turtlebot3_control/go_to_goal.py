@@ -62,15 +62,15 @@ class DriverNode(Node):
         tolerance_dist = 0.05
         tolerance_angle = 0.05
 
-        max_angular_vel = 5.0
+        max_angular_vel = 10.0
         kp_av = max_angular_vel/(2*math.pi)
         
-        max_val_x_vel = 3.0
+        max_val_x_vel = 2.0
         kp_lv = 0.5
 
         sample_time = self.timer_period
         
-        ki_lv = 0.5
+        ki_lv = 1.5
         ki_av = 0.5
 
         if distance_error >= tolerance_dist:
@@ -119,14 +119,12 @@ class DriverNode(Node):
     def follow_path(self):
         if self.first:
             self.first = False
-            command = sys.argv[1]
+            if sys.argv[1] != '':
+                command = sys.argv[1]
             # square side-lenght start from that point and return at the same starting point
             if command == 'square':
                 lside = float(sys.argv[2])
                 self.path = square_path(lside,self.pose.x,self.pose.y,self.pose.theta)
-            elif command == 'circle':
-                radius = float(sys.argv[2])
-                self.path = circle_path(radius,self.pose.x,self.pose.y,self.pose.theta)
             else:
                 point = Pose()
                 point.x = float(sys.argv[1])
@@ -140,7 +138,8 @@ class DriverNode(Node):
                 if self.index == len(self.path):
                     self.get_logger().info(f'Path final point reached')
                     quit()
-
+    
+    
 
         
     def stop_turtlebot(self):
@@ -159,7 +158,7 @@ def angle_norm (angle):
 
 def square_path(l, x, y, theta):
     path = []
-    dist_ptp = 0.25  # Distance between points along the path
+    dist_ptp = 0.5  # Distance between points along the path
     
     prev_point = Pose()
     prev_point.x = x
@@ -181,25 +180,6 @@ def square_path(l, x, y, theta):
             prev_point = point  # Move to the new point
         # Rotate by 90 degrees for the next side
         prev_point.theta += math.pi / 2
-    return path
-
-def circle_path(r, x, y, theta):
-    path = []
-    dist_ptp = 0.25  # Distance between points along the path
-    
-    dist = 0
-    angle = theta
-    while dist < r * 2 * math.pi:
-        # Create a new point along the circle
-        point = Pose()
-        point.x = x + r * math.cos(angle + theta)
-        point.y = y + r * math.sin(angle + theta)
-        point.theta = angle_norm(angle + theta)
-        path.append(point)
-        
-        angle += dist_ptp / r  
-        dist += dist_ptp 
-
     return path
 
 def main(args=None):

@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'go_to_goal = turtlebot3_control.go_to_goal:main',
-            'go_forward = turtlebot3_control.ros2_goforward:main'
+            'go_forward = turtlebot3_control.ros2_goforward:main',
+            'exploration = turtlebot3_control.exploration:main',
         ],
     },
 )
